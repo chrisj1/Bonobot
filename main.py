@@ -3,6 +3,7 @@ import discord
 from PIL import Image,ImageDraw,ImageOps
 import requests
 import sys
+from random import shuffle
 
 TOKEN = sys.argv[1]
 
@@ -79,6 +80,7 @@ async def on_message(message):
 	if message.content.startswith('!bonobo') and len(message.mentions) > 0:
 		im = None
 		global templates
+		shuffle(templates)
 		for template in templates:
 			count = 0
 			if template.faces() is len(message.mentions):
