@@ -61,8 +61,8 @@ def parseManifest():
 def paste(back, top, ul, lr, root):
 	im = root
 	if im is None:
-		im = Image.open(back)
-	im2 = Image.open(top)
+		im = Image.open(back).convert('RGBA')
+	im2 = Image.open(top).convert('RGBA')
 
 	print(lr[0] - ul[0], lr[1] - ul[1])
 	im2 = im2.resize((lr[0] - ul[0], lr[1] - ul[1]))
