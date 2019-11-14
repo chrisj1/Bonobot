@@ -1,0 +1,4 @@
+*.jpg
+*.png
+!template*.jpg
+!template*.png
