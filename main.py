@@ -66,7 +66,7 @@ def paste(back, top, ul, lr, root):
 
 	print(lr[0] - ul[0], lr[1] - ul[1])
 	im2 = im2.resize((lr[0] - ul[0], lr[1] - ul[1]))
-	im.paste(im2, ul)
+	im.paste(im2, ul, im2)
 	im.save("pasted_picture.png")
 	return im
 
