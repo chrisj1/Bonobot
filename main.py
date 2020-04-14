@@ -80,7 +80,8 @@ class BonoboCog(commands.Cog):
 		
 	@commands.command()
 	async def bonobo(self, ctx, users: commands.Greedy[discord.User]):
-		template = random.choice(filter(lambda t: t.faces == len(users), self.templates))                                                                                                                                                         
+
+		template = random.choice(list(filter(lambda t: t.faces == len(users), self.templates)))                                                                                                                                                         
 
 		if template is not None:
 			im = Image.open(template.filename).convert('RGBA')
