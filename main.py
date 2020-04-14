@@ -2,6 +2,7 @@
 import discord
 from discord.ext import commands
 from PIL import Image, ImageDraw, ImageOps
+from io import BytesIO
 import aiohttp
 import sys
 import random
@@ -95,6 +96,7 @@ class BonoboCog(commands.Cog):
 			im.save(buffer, 'png')
 			buffer.seek(0)
 			file = discord.File(filename='pasted_picture.png', fp=buffer)
+			buffer.seek(0)
 			await ctx.send(file=file)
 
 
