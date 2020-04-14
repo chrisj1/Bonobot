@@ -10,8 +10,6 @@ TOKEN = sys.argv[1]
 
 bot = commands.Bot(command_prefix='!')
 
-templates = []
-
 class Template:
 	filename = ""
 	points = []
