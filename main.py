@@ -87,8 +87,8 @@ class BonoboCog(commands.Cog):
 			im = Image.open(template.filename).convert('RGBA')
 
 			for count, user in enumerate(users):
-				async with self.get_avatar(user) as top:
-					im = pasteImg(im, top, template.upperleftcord(count), template.lowerrightcord(count))
+				top = await self.get_avatar(user)
+				im = pasteImg(im, top, template.upperleftcord(count), template.lowerrightcord(count))
 	
 			buffer = BytesIO()
 			im.save(buffer, 'png')
