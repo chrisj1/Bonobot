@@ -6,6 +6,7 @@ import aiohttp
 import sys
 import random
 from typing import Union
+from io import BytesIO
 
 TOKEN = sys.argv[1]
 
@@ -74,9 +75,9 @@ class BonoboCog(commands.Cog):
 	async def get_avatar(self, user: Union[discord.User, discord.Member]) -> Image:
 		avatar_url = user.avatar_url_as(format='png', size=1024)
 		avatar_bytes = None
-		response = await self.session.get(avatar_url)
+		response = await self.session.get(str(avatar_url))
 		avatar_bytes = await response.read()
-		return Image.open(str(BytesIO(avatar_bytes)))
+		return Image.open(BytesIO(avatar_bytes))
 		
 	@commands.command()
 	async def bonobo(self, ctx, users: commands.Greedy[discord.User]):
@@ -92,6 +93,7 @@ class BonoboCog(commands.Cog):
 	
 			buffer = BytesIO()
 			im.save(buffer, 'png')
+			buffer.seek(0)
 			file = discord.File(filename='pasted_picture.png', fp=buffer)
 			await ctx.send(file=file)
 
