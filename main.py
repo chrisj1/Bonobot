@@ -70,12 +70,12 @@ class BonoboCog(commands.Cog):
 		self.templates = parseManifest()
 		self.session = aiohttp.ClientSession(loop=bot.loop)
 
-	async def get_avatar(self, user: Union[discord.User, discord.Member]) -> bytes:
+	async def get_avatar(self, user: Union[discord.User, discord.Member]) -> Image:
 		avatar_url = user.avatar_url_as(format='png', size=1024)
 		avatar_bytes = None
 		async with self.session.get(avatar_url) as response:
 			avatar_bytes = await response.read()
-		return avatar_bytes
+		return Image.open(BytesIO(avatar_bytes))
 		
 	@commands.command()
 	async def bonobo(self, ctx, users: commands.Greedy[discord.User], *):
@@ -85,9 +85,8 @@ class BonoboCog(commands.Cog):
 			im = Image.open(template.filename).convert('RGBA')
 
 			for count, user in enumerate(users):
-				top_bytes = self.get_avatar(user)
-				with Image.open(BytesIO(top_bytes)) as top_im:
-					im = pasteImg(im, top_im, template.upperleftcord(count), template.lowerrightcord(count))
+				with self.get_avatar(user) as top:
+					im = pasteImg(im, top, template.upperleftcord(count), template.lowerrightcord(count))
 	
 			buffer = BytesIO()
 			im.save(buffer, 'png')
