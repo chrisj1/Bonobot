@@ -78,7 +78,7 @@ class BonoboCog(commands.Cog):
 		return Image.open(BytesIO(avatar_bytes))
 		
 	@commands.command()
-	async def bonobo(self, ctx, users: commands.Greedy[discord.User], *):
+	async def bonobo(self, ctx, users: commands.Greedy[discord.User]):
 		template = random.choice(filter(lambda t: t.faces == len(users), self.templates))                                                                                                                                                         
 
 		if template is not None:
