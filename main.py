@@ -74,8 +74,8 @@ class BonoboCog(commands.Cog):
 	async def get_avatar(self, user: Union[discord.User, discord.Member]) -> Image:
 		avatar_url = user.avatar_url_as(format='png', size=1024)
 		avatar_bytes = None
-		async with self.session.get(avatar_url) as response:
-			avatar_bytes = await response.read()
+		response = await self.session.get(avatar_url)
+		avatar_bytes = await response.read()
 		return Image.open(BytesIO(avatar_bytes))
 		
 	@commands.command()
