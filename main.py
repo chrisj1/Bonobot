@@ -1,13 +1,14 @@
 # Work with Python 3.6
 import discord
-from PIL import Image,ImageDraw,ImageOps
+from discord.ext import commands
+from PIL import Image, ImageDraw, ImageOps
 import requests
 import sys
-from random import shuffle
+import random
 
 TOKEN = sys.argv[1]
 
-client = discord.Client()
+bot = commands.Bot(command_prefix='!')
 
 templates = []
 
@@ -16,93 +17,89 @@ class Template:
 	points = []
 	def __init__(self, filename):
 		self.filename = filename
-		self.points=[]
+		self.points = []
 
-	def add_point(self, ulx, uly,lrx,lry):
-		self.points.append((ulx, uly, lrx,lry))
+	def add_point(self, ulx, uly, lrx, lry):
+		self.points.append((ulx, uly, lrx, lry))
 
-	def upperleftcord(self,i):
-		return (self.points[i][0],self.points[i][1])
+	def upperleftcord(self, i):
+		return (self.points[i][0], self.points[i][1])
 
-	def lowerrightcord(self,i):
-		return (self.points[i][2],self.points[i][3])
+	def lowerrightcord(self, i):
+		return (self.points[i][2], self.points[i][3])
 
+	@property
 	def faces(self):
 		return len(self.points)
 
 	def __str__(self):
-		return "filename: {}, points={}".format(self.filename, self.points)
+		return f"filename: {self.filename}, points={self.points}"
 
 	def __repr__(self):
 		return self.__str__()
 
 
 def parseManifest():
+	data = []
 	with open('manifest.txt', 'r') as file:
-		lines = file.readlines()
-		data = []
-		print(lines)
-		for line in lines:
+		for line in file.readlines():
 			dat = line.split(":")
 			print(dat)
 			print(int(dat[1]))
 			template = Template(dat[0])
 			i = 2
 			while i < 2 + 4 * int(dat[1]):
-				template.add_point(int(dat[i]), int(dat[i + 1]), int(dat[i + 2]), int(dat[i + 3].strip()))
+				p1, p2, p3, p4 = int(dat[i]), int(dat[i + 1]), int(dat[i + 2]), int(dat[i + 3].strip())
+				template.add_point(p1, p2, p3, p4)
 				print(template)
-				i+=4
+				i += 4
 			data.append(template)
-		print(data)
-		return data
+	return data
 
 
-
-def paste(back, top, ul, lr, root):
+def pasteImg(back, top, ul, lr, root):
 	im = root
 	if im is None:
-		im = Image.open(back).convert('RGBA')
-	im2 = Image.open(top).convert('RGBA')
+		im = back.convert('RGBA')
+	im2 = top.convert('RGBA')
 
-	print(lr[0] - ul[0], lr[1] - ul[1])
 	im2 = im2.resize((lr[0] - ul[0], lr[1] - ul[1]))
 	im.paste(im2, ul, im2)
-	im.save("pasted_picture.png")
 	return im
 
 
-@client.event
-async def on_message(message):
-	# we do not want the bot to reply to itself
-	if message.author == client.user:
-		return
+class BonoboCog(commands.Cog):
+	def __init__(self, bot):
+		self.bot = bot
+		self.templates = parseManifest()
 
-	if message.content.startswith('!bonobo') and len(message.mentions) > 0:
+	@commands.command()
+	async def bonobo(ctx, users: commands.Greedy[discord.User], *):
 		im = None
-		global templates
-		shuffle(templates)
-		for template in templates:
-			count = 0
-			if template.faces() is len(message.mentions):
-				for i in message.mentions:
-					print(i.display_name)
-					url = "https://cdn.discordapp.com/avatars/{0.id}/{0.avatar}.png?size=1024".format(i)
-					filename = i.display_name
-					r = requests.get(url, allow_redirects=True)
-					open(filename, 'wb').write(r.content)
-					im = paste(template.filename, filename, template.upperleftcord(count),template.lowerrightcord(count), im)
-					count+=1
-				await message.channel.send(file=discord.File('pasted_picture.png'))
-				break
+
+		template = random.choice(filter(lambda t: t.faces == len(users), self.templates))                                                                                                                                                         
+
+		if template is not None:
+			back = Image.open(template.filename)
+
+			for count, user in enumerate(users):
+				url = user.avatar_url_as(static_format='png', size=1024)
+				top = Image.open(requests.get(url, allow_redirects=True, stream=True).raw)
+				im = pasteImg(back, top, template.upperleftcord(count), template.lowerrightcord(count), im)
+	
+			buffer = BytesIO()
+			im.save(buffer, 'png')
+			file = discord.File(filename='pasted_picture.png', fp=buffer)
+			await ctx.send(file=file)
 
 
-@client.event
+@bot.event
 async def on_ready():
 	print('Logged in as')
-	print(client.user.name)
-	print(client.user.id)
+	print(bot.user.name)
+	print(bot.user.id)
 	print('====================')
-	global templates
-	templates = parseManifest()
 
-client.run(TOKEN)
+
+bot.add_cog(BonoboCog(bot))
+bot.run(TOKEN)
