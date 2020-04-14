@@ -2,7 +2,7 @@
 import discord
 from discord.ext import commands
 from PIL import Image, ImageDraw, ImageOps
-import requests
+import aiohttp
 import sys
 import random
 
@@ -55,10 +55,8 @@ def parseManifest():
 	return data
 
 
-def pasteImg(back, top, ul, lr, root):
+def pasteImg(root, top, ul, lr):
 	im = root
-	if im is None:
-		im = back.convert('RGBA')
 	im2 = top.convert('RGBA')
 
 	im2 = im2.resize((lr[0] - ul[0], lr[1] - ul[1]))
@@ -70,20 +68,26 @@ class BonoboCog(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.templates = parseManifest()
+		self.session = aiohttp.ClientSession(loop=bot.loop)
 
+	async def get_avatar(self, user: Union[discord.User, discord.Member]) -> bytes:
+		avatar_url = user.avatar_url_as(format='png', size=1024)
+		avatar_bytes = None
+		async with self.session.get(avatar_url) as response:
+			avatar_bytes = await response.read()
+		return avatar_bytes
+		
 	@commands.command()
 	async def bonobo(self, ctx, users: commands.Greedy[discord.User], *):
-		im = None
-
 		template = random.choice(filter(lambda t: t.faces == len(users), self.templates))                                                                                                                                                         
 
 		if template is not None:
-			back = Image.open(template.filename)
+			im = Image.open(template.filename).convert('RGBA')
 
 			for count, user in enumerate(users):
-				url = user.avatar_url_as(static_format='png', size=1024)
-				top = Image.open(requests.get(url, allow_redirects=True, stream=True).raw)
-				im = pasteImg(back, top, template.upperleftcord(count), template.lowerrightcord(count), im)
+				top_bytes = self.get_avatar(user)
+				with Image.open(BytesIO(top_bytes)) as top_im:
+					im = pasteImg(im, top_im, template.upperleftcord(count), template.lowerrightcord(count))
 	
 			buffer = BytesIO()
 			im.save(buffer, 'png')
