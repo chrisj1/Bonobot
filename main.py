@@ -93,6 +93,7 @@ class BonoboCog(commands.Cog):
 			buffer = BytesIO()
 			im.save(buffer, 'png')
 			file = discord.File(filename='pasted_picture.png', fp=buffer)
+			buffer.seek(0)
 			await ctx.send(file=file)
 
 
