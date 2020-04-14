@@ -74,7 +74,7 @@ class BonoboCog(commands.Cog):
 		self.templates = parseManifest()
 
 	@commands.command()
-	async def bonobo(ctx, users: commands.Greedy[discord.User], *):
+	async def bonobo(self, ctx, users: commands.Greedy[discord.User], *):
 		im = None
 
 		template = random.choice(filter(lambda t: t.faces == len(users), self.templates))                                                                                                                                                         
