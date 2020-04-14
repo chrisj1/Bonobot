@@ -76,7 +76,7 @@ class BonoboCog(commands.Cog):
 		avatar_bytes = None
 		response = await self.session.get(avatar_url)
 		avatar_bytes = await response.read()
-		return Image.open(BytesIO(avatar_bytes))
+		return Image.open(str(BytesIO(avatar_bytes)))
 		
 	@commands.command()
 	async def bonobo(self, ctx, users: commands.Greedy[discord.User]):
