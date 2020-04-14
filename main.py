@@ -2,6 +2,7 @@
 import discord
 from discord.ext import commands
 from PIL import Image, ImageDraw, ImageOps
+from io import BytesIO
 import aiohttp
 import sys
 import random
