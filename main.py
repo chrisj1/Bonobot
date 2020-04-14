@@ -5,6 +5,7 @@ from PIL import Image, ImageDraw, ImageOps
 import aiohttp
 import sys
 import random
+from typing import Union
 
 TOKEN = sys.argv[1]
 
