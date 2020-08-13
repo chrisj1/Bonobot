@@ -1,6 +1,6 @@
-template01.png:1:225:37:506:323
-template02.jpg:1:269:47:374:146
-template03.jpg:2:194:105:338:279:583:327:670:445
-template04.jpg:1:91:64:236:238
-template05.jpg:1:319:119:590:514
-template08.jpg:3:250:39:575:355:91:455:518:835:945:118:1289:475
+templates/template01.png:1:225:37:506:323
+templates/template02.jpg:1:269:47:374:146
+templates/template03.jpg:2:194:105:338:279:583:327:670:445
+templates/template04.jpg:1:91:64:236:238
+templates/template05.jpg:1:319:119:590:514
+templates/template08.jpg:3:250:39:575:355:91:455:518:835:945:118:1289:475
