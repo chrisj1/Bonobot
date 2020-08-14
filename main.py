@@ -9,7 +9,11 @@ import random
 from typing import Union
 from io import BytesIO
 
-TOKEN = sys.argv[1]
+try:
+    TOKEN = sys.argv[1]
+except:
+    print("ERROR: argv[1] is missing - no discord token supplied!", file=sys.stderr)
+    sys.exit(1)
 
 bot = commands.Bot(command_prefix="!")
 
