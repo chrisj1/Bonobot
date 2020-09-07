@@ -88,11 +88,14 @@ class BonoboCog(commands.Cog):
         avatar_bytes = await response.read()
         return Image.open(BytesIO(avatar_bytes))
 
-    @commands.command()
+    @commands.command(aliases=["bonobot"])
     async def bonobo(self, ctx, users: commands.Greedy[discord.User]):
         available_templates = list(
             filter(lambda t: t.faces == len(users), self.templates)
         )
+
+        # Randomize the images for maximum fun
+        random.shuffle(users)
 
         if len(available_templates) == 0:
             await ctx.send("Invalid usage.")
@@ -109,7 +112,7 @@ class BonoboCog(commands.Cog):
         buffer = BytesIO()
         im.save(buffer, "png")
         buffer.seek(0)
-        await ctx.send(file=discord.File(filename="pasted_picture.png", fp=buffer))
+        await ctx.send(file=discord.File(filename="love.png", fp=buffer))
 
 
 @bot.event
