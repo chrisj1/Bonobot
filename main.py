@@ -61,12 +61,14 @@ def parseManifest():
                         if(im[y-1][x][0] != 0 and im[y][x-1][0] != 0):
                             startingpoints.append((x,y))
 
+
+            height, width, _ = im.shape
             for x_1, y_1 in startingpoints:
                 x_2, y_2 = x_1,y_1
-                while (im[y_2][x_2][0] != 255):
+                while (y_2 < height and im[y_2][x_2][0] != 255):
                     y_2 += 1
                 y_2-=1
-                while (im[y_2][x_2][0] != 255):
+                while (x_2 < width and im[y_2][x_2][0] != 255):
                     x_2 += 1
                 template.add_point(x_1, y_1, x_2, y_2)
             data.append(template)
