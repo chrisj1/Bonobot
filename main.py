@@ -8,6 +8,8 @@ import sys
 import random
 from typing import Union
 from io import BytesIO
+import imageio
+import os
 
 try:
     TOKEN = sys.argv[1]
@@ -48,30 +50,34 @@ class Template:
 
 def parseManifest():
     data = []
-    with open("manifest.txt", "r") as file:
-        for line in file.readlines():
-            dat = line.split(":")
-            template = Template(dat[0])
-            i = 2
-            while i < 2 + 4 * int(dat[1]):
-                p1, p2, p3, p4 = (
-                    int(dat[i]),
-                    int(dat[i + 1]),
-                    int(dat[i + 2]),
-                    int(dat[i + 3].strip()),
-                )
-                template.add_point(p1, p2, p3, p4)
-                print(template)
-                i += 4
+    for filename in os.listdir('autotemplates'):
+        if filename[-9:] == "_mask.png":
+            template = Template(f'autotemplates/{filename[:-9]}.png')
+            im = imageio.imread(f'autotemplates/{filename}')
+            startingpoints = []
+            for y in range(im.shape[0]):
+                for x in range(im.shape[1]):
+                    if im[y][x][0] == 0:
+                        if(im[y-1][x][0] != 0 and im[y][x-1][0] != 0):
+                            startingpoints.append((x,y))
+
+            for x_1, y_1 in startingpoints:
+                x_2, y_2 = x_1,y_1
+                while (im[y_2][x_2][0] != 255):
+                    y_2 += 1
+                y_2-=1
+                while (im[y_2][x_2][0] != 255):
+                    x_2 += 1
+                template.add_point(x_1, y_1, x_2, y_2)
             data.append(template)
+            print(startingpoints)
     return data
 
 
 def pasteImg(root, top, ul, lr):
     im = root
     im2 = top.convert("RGBA")
-
-    im2 = im2.resize((lr[0] - ul[0], lr[1] - ul[1]))
+    im2 = im2.resize((abs(lr[0] - ul[0]), abs(lr[1] - ul[1])))
     im.paste(im2, ul, im2)
     return im
 
