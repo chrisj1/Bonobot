@@ -104,9 +104,6 @@ numpy == 1.19.2
 # Bonobot/venv/lib/python3.6/site-packages/PIL/MicImagePlugin.py: 20
 olefile == 0.46
 
-# Bonobot/venv/lib/python3.6/site-packages/numpy/testing/_private/utils.py: 165,183
-os-sys-linux == 0.0.0.dev0
-
 # Bonobot/venv/lib/python3.6/site-packages/importlib_metadata/tests/test_integration.py: 6,7
 packaging == 20.4
 
