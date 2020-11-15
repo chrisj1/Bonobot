@@ -269,6 +269,3 @@ typing-extensions == 3.7.4.3
 
 # Bonobot/venv/lib/python3.6/site-packages/numpy/testing/_private/utils.py: 165,183
 win32compat == 221.26
-
-# Bonobot/venv/lib/python3.6/site-packages/pip-10.0.1-py3.6.egg/pip/_vendor/appdirs.py: 480
-win32ext == 221.2
