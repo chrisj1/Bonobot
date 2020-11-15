@@ -116,9 +116,6 @@ packaging == 20.4
 # Bonobot/venv/lib/python3.6/site-packages/importlib_metadata/_compat.py: 36
 pathlib2 == 2.3.5
 
-# Bonobot/venv/lib/python3.6/site-packages/PIL/ImageQt.py: 33
-plotpy
-
 # Bonobot/venv/lib/python3.6/site-packages/importlib_metadata/tests/test_main.py: 11
 pyfakefs == 4.2.1
 
