@@ -12,9 +12,9 @@ import imageio
 import os
 
 try:
-    TOKEN = sys.argv[1]
+    TOKEN = os.environ['BONOBOT_TOKEN']
 except:
-    print("ERROR: argv[1] is missing - no discord token supplied!", file=sys.stderr)
+    print("ERROR: environment variable BONOBOT_TOKEN is missing - no discord token supplied!", file=sys.stderr)
     sys.exit(1)
 
 bot = commands.Bot(command_prefix="!")
