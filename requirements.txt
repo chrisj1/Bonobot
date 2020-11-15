@@ -260,6 +260,3 @@ six == 1.15.0
 
 # Bonobot/venv/lib/python3.6/site-packages/discord/ext/typed_commands/__init__.py: 3
 typing-extensions == 3.7.4.3
-
-# Bonobot/venv/lib/python3.6/site-packages/numpy/testing/_private/utils.py: 165,183
-win32compat == 221.26
