@@ -59,7 +59,7 @@ def parseManifest():
     if not os.path.exists('manifestcache.txt'):
         f = open('manifestcache.txt', 'w')
         f.close()
-    with open('manifestcache.txt', 'a+') as f:
+    with open('manifestcache.txt', 'r') as f:
         for line in f.readlines():
             d = line.strip().split(' ')
             filename = d[0]
@@ -70,6 +70,7 @@ def parseManifest():
                 template.add_point(x_1, y_1, x_2, y_2)
             data.add(template)
             print(f"Loaded template for {filename}")
+    with open('manifestcache.txt', 'a') as f:
         for filename in os.listdir('autotemplates'):
             template = Template(f'autotemplates/{filename[:-9]}.png')
             if filename[-9:] == "_mask.png":
