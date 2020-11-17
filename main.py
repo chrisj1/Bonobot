@@ -10,6 +10,7 @@ from typing import Union
 from io import BytesIO
 import imageio
 import os
+import os.path
 
 try:
     TOKEN = os.environ['BONOBOT_TOKEN']
@@ -47,32 +48,61 @@ class Template:
     def __repr__(self):
         return self.__str__()
 
+    def __eq__(self, other): return other.filename == self.filename
+
+    def __hash__(self):
+        return hash(self.filename)
+
 
 def parseManifest():
-    data = []
-    for filename in os.listdir('autotemplates'):
-        if filename[-9:] == "_mask.png":
-            template = Template(f'autotemplates/{filename[:-9]}.png')
-            im = imageio.imread(f'autotemplates/{filename}')
-            startingpoints = []
-            for y in range(im.shape[0]):
-                for x in range(im.shape[1]):
-                    if im[y][x][0] == 0:
-                        if(im[y-1][x][0] != 0 and im[y][x-1][0] != 0):
-                            startingpoints.append((x,y))
-
-
-            height, width, _ = im.shape
-            for x_1, y_1 in startingpoints:
-                x_2, y_2 = x_1,y_1
-                while (y_2 < height and im[y_2][x_2][0] != 255):
-                    y_2 += 1
-                y_2-=1
-                while (x_2 < width and im[y_2][x_2][0] != 255):
-                    x_2 += 1
+    data = set()
+    if not os.path.exists('manifestcache.txt'):
+        f = open('manifestcache.txt', 'w')
+        f.close()
+    with open('manifestcache.txt', 'a+') as f:
+        for line in f.readlines():
+            d = line.strip().split(' ')
+            filename = d[0]
+            template = Template(filename)
+            print(d)
+            for i in range(1,len(d), 4):
+                x_1, y_1, x_2, y_2 = int(d[i]), int(d[i+1]), int(d[i+2]), int(d[i+3])
                 template.add_point(x_1, y_1, x_2, y_2)
-            data.append(template)
-            print(startingpoints)
+            data.add(template)
+            print(f"Loaded template for {filename}")
+        for filename in os.listdir('autotemplates'):
+            template = Template(f'autotemplates/{filename[:-9]}.png')
+            if filename[-9:] == "_mask.png":
+                if template in data:
+                    continue
+                template = Template(f'autotemplates/{filename[:-9]}.png')
+                im = imageio.imread(f'autotemplates/{filename}')
+                startingpoints = []
+                for y in range(im.shape[0]):
+                    for x in range(im.shape[1]):
+                        if im[y][x][0] == 0:
+                            if(im[y-1][x][0] != 0 and im[y][x-1][0] != 0):
+                                startingpoints.append((x,y))
+
+
+                height, width, _ = im.shape
+                for x_1, y_1 in startingpoints:
+                    x_2, y_2 = x_1,y_1
+                    while (y_2 < height and im[y_2][x_2][0] != 255):
+                        y_2 += 1
+                    y_2-=1
+                    while (x_2 < width and im[y_2][x_2][0] != 255):
+                        x_2 += 1
+                    template.add_point(x_1, y_1, x_2, y_2)
+                data.add(template)
+                s = ""
+                for point in template.points:
+                    s+=str(point[0]) + ' '
+                    s+=str(point[1]) + ' '
+                    s += str(point[2]) + ' '
+                    s += str(point[3]) + ' '
+                f.write(f"autotemplates/{filename[:-9]}.png "+s[:-1] + "\n")
+                print(f"Saved template as autotemplates/{filename[:-9]}.png "+s[:-1])
     return data
 
 
