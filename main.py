@@ -163,6 +163,7 @@ async def on_message(message):
         guild = discord.utils.get(bot.guilds, name='Bonobot Testing')
         emoji = discord.utils.get(guild.emojis, name='bananaman')
         await message.add_reaction(emoji)
+    await bot.process_commands(message)
 
 
 
