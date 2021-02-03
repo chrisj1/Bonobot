@@ -14,19 +14,3 @@ autotemplates/template07.png 312 51 472 254
 autotemplates/template06.png 343 130 586 389 932 183 1289 563 132 443 602 914
 autotemplates/template10.png 170 125 326 310
 autotemplates/template11.png 102 15 130 54
-autotemplates/template03.png 184 81 340 278 564 313 672 442
-autotemplates/template02.png 247 27 351 172
-autotemplates/template09.png 644 9 868 272 101 208 263 383
-autotemplates/template08.png 186 217 384 430
-autotemplates/template14.png 267 36 367 175 276 194 346 287
-autotemplates/template15.png 154 29 210 102 495 39 585 150 300 78 372 181 606 99 700 206
-autotemplates/template13.png 1218 162 1454 449
-autotemplates/template12.png 448 164 510 241 141 198 201 283 644 204 710 279 84 292 120 337
-autotemplates/template04.png 98 49 250 240
-autotemplates/template05.png 316 168 602 527
-autotemplates/template16.png 295 140 391 247 105 154 189 249
-autotemplates/template01.png 212 86 360 303
-autotemplates/template07.png 312 51 472 254
-autotemplates/template06.png 343 130 586 389 932 183 1289 563 132 443 602 914
-autotemplates/template10.png 170 125 326 310
-autotemplates/template11.png 102 15 130 54
