@@ -153,6 +153,19 @@ class BonoboCog(commands.Cog):
         buffer.seek(0)
         await ctx.send(file=discord.File(filename="love.png", fp=buffer))
 
+@bot.event
+async def on_message(message):
+    if message.author.id == 243568884131561473:
+        guild = discord.utils.get(bot.guilds, name='Bonobot Testing')
+        emoji = discord.utils.get(guild.emojis, name='thisTBH')
+        await message.add_reaction(emoji)
+    if message.author.id == 325734733923483669:
+        guild = discord.utils.get(bot.guilds, name='Bonobot Testing')
+        emoji = discord.utils.get(guild.emojis, name='bananaman')
+        await message.add_reaction(emoji)
+
+
+
 
 @bot.event
 async def on_ready():
