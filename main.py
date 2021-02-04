@@ -156,14 +156,6 @@ class BonoboCog(commands.Cog):
 
 @bot.event
 async def on_message(message):
-    if message.author.id == 243568884131561473:
-        guild = discord.utils.get(bot.guilds, name='Bonobot Testing')
-        emoji = discord.utils.get(guild.emojis, name='thisTBH')
-        await message.add_reaction(emoji)
-    if message.author.id == 325734733923483669:
-        guild = discord.utils.get(bot.guilds, name='Bonobot Testing')
-        emoji = discord.utils.get(guild.emojis, name='bananaman')
-        await message.add_reaction(emoji)
     if 'harambe' in message.content.lower():
         emoji = '\U0001F346'
         await message.add_reaction(emoji)
