@@ -1,4 +1,5 @@
-# Work with Python 3.6
+# Work with Python 3.6'
+from __future__ import unicode_literals
 import discord
 from discord.ext import commands
 from PIL import Image, ImageDraw, ImageOps
@@ -162,6 +163,9 @@ async def on_message(message):
     if message.author.id == 325734733923483669:
         guild = discord.utils.get(bot.guilds, name='Bonobot Testing')
         emoji = discord.utils.get(guild.emojis, name='bananaman')
+        await message.add_reaction(emoji)
+    if 'harambe' in message.content.lower():
+        emoji = '\U0001F346'
         await message.add_reaction(emoji)
     await bot.process_commands(message)
 
