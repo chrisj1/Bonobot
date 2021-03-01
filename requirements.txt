@@ -12,7 +12,7 @@ PySide2 == 5.15.0
 
 # Bonobot/main.py: 6
 # Bonobot/venv/lib/python3.6/site-packages/discord/ext/tasks/__init__.py: 29
-aiohttp == 3.6.2
+aiohttp == 3.7.4
 
 # Bonobot/venv/lib/python3.6/site-packages/imageio/plugins/_bsdf.py: 938
 bsdf == 2.2.1
