@@ -14,3 +14,11 @@ autotemplates/template07.png 312 51 472 254
 autotemplates/template06.png 343 130 586 389 932 183 1289 563 132 443 602 914
 autotemplates/template10.png 170 125 326 310
 autotemplates/template11.png 102 15 130 54
+autotemplates/template17.png 347 216 555 422 318 711 543 943
+autotemplates/template18.png 246 24 344 135 1037 384 1103 442
+autotemplates/template19.png 329 44 504 214
+autotemplates/template20.png 126 275 301 446
+autotemplates/template22.png 192 63 266 146 8 83 72 152 475 106 509 158 374 114 435 189
+autotemplates/template21.png 174 43 226 92 124 94 185 157 278 103 330 154 367 133 429 197
+autotemplates/template23.png 384 160 496 280 226 171 323 260 538 195 653 308 462 312 552 397
+autotemplates/template24.png 135 98 209 166 250 139 316 207
