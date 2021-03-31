@@ -115,6 +115,13 @@ def pasteImg(root, top, ul, lr):
     im.paste(im2, ul, im2)
     return im
 
+class DiscordMonke(discord.ext.commands.converter.Converter):
+    async def convert(self, ctx, argument):
+        if argument.lower() in ["random", "rng"]:
+            return random.choice(ctx.guild.members)
+        else:
+            return await commands.converter.MemberConverter().convert(ctx, argument)
+
 
 class BonoboCog(commands.Cog):
     def __init__(self, bot):
@@ -129,7 +136,7 @@ class BonoboCog(commands.Cog):
         return Image.open(BytesIO(avatar_bytes))
 
     @commands.command(aliases=["bonobot"])
-    async def bonobo(self, ctx, users: commands.Greedy[discord.User]):
+    async def bonobo(self, ctx, users: commands.Greedy[DiscordMonke]):
         available_templates = list(
             filter(lambda t: t.faces == len(users), self.templates)
         )
