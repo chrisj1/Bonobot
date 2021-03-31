@@ -19,7 +19,9 @@ except:
     print("ERROR: environment variable BONOBOT_TOKEN is missing - no discord token supplied!", file=sys.stderr)
     sys.exit(1)
 
-bot = commands.Bot(command_prefix="!")
+intents = discord.Intents.default()
+intents.members = True
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 
 class Template:
