@@ -148,6 +148,12 @@ class BonoboCog(commands.Cog):
 
     @commands.command(aliases=["bonobot"])
     async def bonobo(self, ctx, users: commands.Greedy[DiscordMonke]):
+        if len(users) == 0:
+            users = [
+                random.choice(ctx.guild.members)
+                for _ in range(random.sample(self.templates, 1)[0].faces)
+            ]
+
         available_templates = list(
             filter(lambda t: t.faces == len(users), self.templates)
         )
