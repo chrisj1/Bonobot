@@ -130,8 +130,10 @@ class DiscordMonke(discord.ext.commands.converter.Converter):
     async def convert(self, ctx, argument):
         if argument.lower() in ["random", "rng"]:
             return random.choice(ctx.guild.members)
-        else:
+        try:
             return await commands.converter.MemberConverter().convert(ctx, argument)
+        except:
+            return await commands.convertor.PartialEmojiConvertor().convert(ctx, argument)
 
 
 class BonoboCog(commands.Cog):
