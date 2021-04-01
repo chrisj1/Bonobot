@@ -14,12 +14,17 @@ import os
 import os.path
 
 try:
-    TOKEN = os.environ['BONOBOT_TOKEN']
+    TOKEN = os.environ["BONOBOT_TOKEN"]
 except:
-    print("ERROR: environment variable BONOBOT_TOKEN is missing - no discord token supplied!", file=sys.stderr)
+    print(
+        "ERROR: environment variable BONOBOT_TOKEN is missing - no discord token supplied!",
+        file=sys.stderr,
+    )
     sys.exit(1)
 
-bot = commands.Bot(command_prefix="!")
+intents = discord.Intents.default()
+intents.members = True
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 
 class Template:
@@ -49,7 +54,8 @@ class Template:
     def __repr__(self):
         return self.__str__()
 
-    def __eq__(self, other): return other.filename == self.filename
+    def __eq__(self, other):
+        return other.filename == self.filename
 
     def __hash__(self):
         return hash(self.filename)
@@ -57,54 +63,58 @@ class Template:
 
 def parseManifest():
     data = set()
-    if not os.path.exists('manifestcache.txt'):
-        f = open('manifestcache.txt', 'w')
+    if not os.path.exists("manifestcache.txt"):
+        f = open("manifestcache.txt", "w")
         f.close()
-    with open('manifestcache.txt', 'r') as f:
+    with open("manifestcache.txt", "r") as f:
         for line in f.readlines():
-            d = line.strip().split(' ')
+            d = line.strip().split(" ")
             filename = d[0]
             template = Template(filename)
             print(d)
-            for i in range(1,len(d), 4):
-                x_1, y_1, x_2, y_2 = int(d[i]), int(d[i+1]), int(d[i+2]), int(d[i+3])
+            for i in range(1, len(d), 4):
+                x_1, y_1, x_2, y_2 = (
+                    int(d[i]),
+                    int(d[i + 1]),
+                    int(d[i + 2]),
+                    int(d[i + 3]),
+                )
                 template.add_point(x_1, y_1, x_2, y_2)
             data.add(template)
             print(f"Loaded template for {filename}")
-    with open('manifestcache.txt', 'a') as f:
-        for filename in os.listdir('autotemplates'):
-            template = Template(f'autotemplates/{filename[:-9]}.png')
+    with open("manifestcache.txt", "a") as f:
+        for filename in os.listdir("autotemplates"):
+            template = Template(f"autotemplates/{filename[:-9]}.png")
             if filename[-9:] == "_mask.png":
                 if template in data:
                     continue
-                template = Template(f'autotemplates/{filename[:-9]}.png')
-                im = imageio.imread(f'autotemplates/{filename}')
+                template = Template(f"autotemplates/{filename[:-9]}.png")
+                im = imageio.imread(f"autotemplates/{filename}")
                 startingpoints = []
                 for y in range(im.shape[0]):
                     for x in range(im.shape[1]):
                         if im[y][x][0] == 0:
-                            if(im[y-1][x][0] != 0 and im[y][x-1][0] != 0):
-                                startingpoints.append((x,y))
-
+                            if im[y - 1][x][0] != 0 and im[y][x - 1][0] != 0:
+                                startingpoints.append((x, y))
 
                 height, width, _ = im.shape
                 for x_1, y_1 in startingpoints:
-                    x_2, y_2 = x_1,y_1
-                    while (y_2 < height and im[y_2][x_2][0] != 255):
+                    x_2, y_2 = x_1, y_1
+                    while y_2 < height and im[y_2][x_2][0] != 255:
                         y_2 += 1
-                    y_2-=1
-                    while (x_2 < width and im[y_2][x_2][0] != 255):
+                    y_2 -= 1
+                    while x_2 < width and im[y_2][x_2][0] != 255:
                         x_2 += 1
                     template.add_point(x_1, y_1, x_2, y_2)
                 data.add(template)
                 s = ""
                 for point in template.points:
-                    s+=str(point[0]) + ' '
-                    s+=str(point[1]) + ' '
-                    s += str(point[2]) + ' '
-                    s += str(point[3]) + ' '
-                f.write(f"autotemplates/{filename[:-9]}.png "+s[:-1] + "\n")
-                print(f"Saved template as autotemplates/{filename[:-9]}.png "+s[:-1])
+                    s += str(point[0]) + " "
+                    s += str(point[1]) + " "
+                    s += str(point[2]) + " "
+                    s += str(point[3]) + " "
+                f.write(f"autotemplates/{filename[:-9]}.png " + s[:-1] + "\n")
+                print(f"Saved template as autotemplates/{filename[:-9]}.png " + s[:-1])
     return data
 
 
@@ -114,6 +124,14 @@ def pasteImg(root, top, ul, lr):
     im2 = im2.resize((abs(lr[0] - ul[0]), abs(lr[1] - ul[1])))
     im.paste(im2, ul, im2)
     return im
+
+
+class DiscordMonke(discord.ext.commands.converter.Converter):
+    async def convert(self, ctx, argument):
+        if argument.lower() in ["random", "rng"]:
+            return random.choice(ctx.guild.members)
+        else:
+            return await commands.converter.MemberConverter().convert(ctx, argument)
 
 
 class BonoboCog(commands.Cog):
@@ -129,7 +147,7 @@ class BonoboCog(commands.Cog):
         return Image.open(BytesIO(avatar_bytes))
 
     @commands.command(aliases=["bonobot"])
-    async def bonobo(self, ctx, users: commands.Greedy[discord.User]):
+    async def bonobo(self, ctx, users: commands.Greedy[DiscordMonke]):
         available_templates = list(
             filter(lambda t: t.faces == len(users), self.templates)
         )
@@ -154,14 +172,13 @@ class BonoboCog(commands.Cog):
         buffer.seek(0)
         await ctx.send(file=discord.File(filename="love.png", fp=buffer))
 
+
 @bot.event
 async def on_message(message):
-    if 'harambe' in message.content.lower():
-        emoji = '\U0001F346'
+    if "harambe" in message.content.lower():
+        emoji = "\U0001F346"
         await message.add_reaction(emoji)
     await bot.process_commands(message)
-
-
 
 
 @bot.event
