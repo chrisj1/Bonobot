@@ -127,11 +127,14 @@ def pasteImg(root, top, ul, lr):
 
 
 class DiscordMonke(discord.ext.commands.converter.Converter):
-    async def convert(self, ctx, argument):
+    async def convert(self, ctx, argument: str):
         if argument.lower() in ["random", "rng"]:
             return random.choice(ctx.guild.members)
-        else:
+
+        try:
             return await commands.converter.MemberConverter().convert(ctx, argument)
+        except:
+            return await commands.converter.EmojiConverter().convert(ctx, argument)
 
 
 class BonoboCog(commands.Cog):
@@ -140,18 +143,23 @@ class BonoboCog(commands.Cog):
         self.templates = parseManifest()
         self.session = aiohttp.ClientSession(loop=bot.loop)
 
-    async def get_avatar(self, user: Union[discord.User, discord.Member]) -> Image:
-        avatar_url = user.avatar_url_as(format="png", size=1024)
+    async def get_avatar(
+        self, user: Union[discord.User, discord.Member, discord.emoji.Emoji]
+    ) -> Image:
+        if isinstance(user, discord.emoji.Emoji):
+            avatar_url = user.url_as(format="png")
+        else:
+            avatar_url = user.avatar_url_as(format="png", size=1024)
         response = await self.session.get(str(avatar_url))
         avatar_bytes = await response.read()
         return Image.open(BytesIO(avatar_bytes))
 
     @commands.command(aliases=["bonobot"])
     async def bonobo(self, ctx, users: commands.Greedy[DiscordMonke]):
-        if len(users) == 0:
+        if len(users) == 0 and len(ctx.message.clean_content.split()) == 1:
             users = [
                 random.choice(ctx.guild.members)
-                for _ in range(random.sample(self.templates, 1)[0].faces)
+                for _ in range(random.choice(tuple(self.templates)).faces)
             ]
 
         available_templates = list(
