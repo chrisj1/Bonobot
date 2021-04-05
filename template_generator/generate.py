@@ -71,7 +71,7 @@ while True:
     # 'r' key pressed means reset rectangles
     if key == ord("r"):
         image = copy.copy()
-        rectangle = []
+        rectangles = []
     # 'enter' key pressed means save mask
     # also works with the 'c' key just in case mac enter keys are a different value
     elif key == 13 or key == ord("c"):
