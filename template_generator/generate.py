@@ -32,7 +32,7 @@ def click_and_crop(event, x, y, flags, param):
 
         x_size = abs(refPt[0][0] - refPt[1][0])
         y_size = abs(refPt[0][1] - refPt[1][1])
-        min_size = 30
+        min_size = 20
         if x_size < min_size or y_size < min_size:
             print(
                 f"Rectangle is too small, both dementions must be > {min_size}px. You rectangle was {x_size}x{y_size}"
