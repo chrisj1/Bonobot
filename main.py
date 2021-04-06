@@ -142,6 +142,23 @@ class DiscordMonke(discord.ext.commands.converter.Converter):
             return await commands.converter.EmojiConverter().convert(ctx, argument)
 
 
+def get_best_random(users, members):
+    currRandom = set()
+    for i in range(len(users)):
+        if isinstance(users[i], LazyRandom):
+            if len(currRandom) >= len(members):
+                # just do regular sampling
+                users[i] = random.choice(members)
+                continue
+
+            # find unique random member
+            while (candidate := random.choice(members)) in currRandom:
+                pass
+
+            currRandom.add(candidate)
+            users[i] = candidate
+
+
 class BonoboCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -162,8 +179,9 @@ class BonoboCog(commands.Cog):
     @commands.command(aliases=["bonobot"])
     async def bonobo(self, ctx, users: commands.Greedy[DiscordMonke]):
         if len(users) == 0 and len(ctx.message.clean_content.split()) == 1:
-            users = random.choices(
-                ctx.guild.members, k=random.choice(tuple(self.templates)).faces
+            get_best_random(
+                users := [LazyRandom()] * random.choice(tuple(self.templates)).faces,
+                ctx.guild.members,
             )
 
         available_templates = list(
@@ -178,21 +196,8 @@ class BonoboCog(commands.Cog):
             return
 
         template = random.choice(available_templates)
-
         # Handle any randoms
-        currRandom = set()
-        for i in range(len(users)):
-            if isinstance(users[i], LazyRandom):
-                if len(currRandom) >= len(ctx.guild.members):
-                    # just do regular sampling
-                    users[i] = random.choice(ctx.guild.members)
-                    continue
-
-                # find unique random member
-                while (candidate := random.choice(ctx.guild.members)) in currRandom:
-                    candidate = random.choice(ctx.guild.members)
-                currRandom.add(candidate)
-                users[i] = candidate
+        get_best_random(users, ctx.guild.members)
 
         im = Image.open(template.filename).convert("RGBA")
         for count, user in enumerate(users):
