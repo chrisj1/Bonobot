@@ -152,8 +152,9 @@ def get_best_random(users, members):
                 continue
 
             # find unique random member
-            while (candidate := random.choice(members)) in currRandom:
-                pass
+            candidate = random.choice(members)
+            while candidate in currRandom:
+                candidate = random.choice(members)
 
             currRandom.add(candidate)
             users[i] = candidate
@@ -179,8 +180,9 @@ class BonoboCog(commands.Cog):
     @commands.command(aliases=["bonobot"])
     async def bonobo(self, ctx, users: commands.Greedy[DiscordMonke]):
         if len(users) == 0 and len(ctx.message.clean_content.split()) == 1:
+            users = [LazyRandom()] * random.choice(tuple(self.templates)).faces
             get_best_random(
-                users := [LazyRandom()] * random.choice(tuple(self.templates)).faces,
+                users,
                 ctx.guild.members,
             )
 
