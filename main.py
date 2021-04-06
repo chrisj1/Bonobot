@@ -126,10 +126,15 @@ def pasteImg(root, top, ul, lr):
     return im
 
 
+class LazyRandom:
+    def __init__(self):
+        pass
+
+
 class DiscordMonke(discord.ext.commands.converter.Converter):
     async def convert(self, ctx, argument: str):
         if argument.lower() in ["random", "rng"]:
-            return random.choice(ctx.guild.members)
+            return LazyRandom()
 
         try:
             return await commands.converter.MemberConverter().convert(ctx, argument)
@@ -157,16 +162,15 @@ class BonoboCog(commands.Cog):
     @commands.command(aliases=["bonobot"])
     async def bonobo(self, ctx, users: commands.Greedy[DiscordMonke]):
         if len(users) == 0 and len(ctx.message.clean_content.split()) == 1:
-            users = [
-                random.choice(ctx.guild.members)
-                for _ in range(random.choice(tuple(self.templates)).faces)
-            ]
+            users = random.choices(
+                ctx.guild.members, k=random.choice(tuple(self.templates)).faces
+            )
 
         available_templates = list(
             filter(lambda t: t.faces == len(users), self.templates)
         )
 
-        # Randomize the images for maximum fun
+        # Randomize the ordering for maximum fun
         random.shuffle(users)
 
         if len(available_templates) == 0:
@@ -174,6 +178,22 @@ class BonoboCog(commands.Cog):
             return
 
         template = random.choice(available_templates)
+
+        # Handle any randoms
+        currRandom = set()
+        for i in range(len(users)):
+            if isinstance(users[i], LazyRandom):
+                if len(currRandom) >= len(ctx.guild.members):
+                    # just do regular sampling
+                    users[i] = random.choice(ctx.guild.members)
+                    continue
+
+                # find unique random member
+                while (candidate := random.choice(ctx.guild.members)) in currRandom:
+                    candidate = random.choice(ctx.guild.members)
+                currRandom.add(candidate)
+                users[i] = candidate
+
         im = Image.open(template.filename).convert("RGBA")
         for count, user in enumerate(users):
             top = await self.get_avatar(user)
