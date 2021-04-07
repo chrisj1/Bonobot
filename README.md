@@ -5,6 +5,7 @@ Bonobos are an endangered species and according to [this link](https://www.awf.o
 To learn more and help these magnificient animals: https://www.bonobos.org/
 # How to add a new bonobo template
 
+0. Make sure your image is a bonobo. People trying to merge chips will be dealt with.
 1. Fork and clone this repo
 2. Save your new bonobo images to the autotemplates folder.
 3. run `python template_generator/generate.py autotemplates/YOUR_TEMPLATE_FILE
