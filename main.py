@@ -12,6 +12,9 @@ from io import BytesIO
 import imageio
 import os
 import os.path
+from discord_slash import SlashCommand, SlashContext
+from discord.ext.commands import Greedy
+from discord.ext.commands.view import StringView
 
 try:
     TOKEN = os.environ["BONOBOT_TOKEN"]
@@ -25,7 +28,18 @@ except:
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
+slash = SlashCommand(bot,sync_commands=True)
 
+@slash.slash(name="bonobo",guild_ids=[804072920519409674])
+async def _bonobo(ctx: SlashContext, message):
+    cmd = bot.get_command("bonobo")
+    view = StringView(message)
+    ctx.command = cmd
+    ctx.view = view
+    ctx.cog = bot.get_cog("BonoboCog")
+    await ctx.defer()
+    await ctx.send("Hi")
+    await bot.invoke(ctx)
 
 class Template:
     filename = ""
