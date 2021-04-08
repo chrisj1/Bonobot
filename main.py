@@ -13,7 +13,6 @@ import imageio
 import os
 import os.path
 from discord_slash import SlashCommand, SlashContext
-from discord.ext.commands import Greedy
 from discord.ext.commands.view import StringView
 
 try:
@@ -28,18 +27,7 @@ except:
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
-slash = SlashCommand(bot,sync_commands=True)
 
-@slash.slash(name="bonobo",guild_ids=[804072920519409674])
-async def _bonobo(ctx: SlashContext, message):
-    cmd = bot.get_command("bonobo")
-    view = StringView(message)
-    ctx.command = cmd
-    ctx.view = view
-    ctx.cog = bot.get_cog("BonoboCog")
-    await ctx.defer()
-    await ctx.send("Hi")
-    await bot.invoke(ctx)
 
 class Template:
     filename = ""
@@ -193,7 +181,13 @@ class BonoboCog(commands.Cog):
 
     @commands.command(aliases=["bonobot"])
     async def bonobo(self, ctx, users: commands.Greedy[DiscordMonke]):
-        if len(users) == 0 and len(ctx.message.clean_content.split()) == 1:
+        if len(users) == 0 and (
+            (
+                hasattr(ctx.message, "clean_content")
+                and len(ctx.message.clean_content.split()) == 1
+            )
+            or not hasattr(ctx.message, "clean_content")
+        ):
             users = [LazyRandom()] * random.choice(tuple(self.templates)).faces
             get_best_random(
                 users,
@@ -245,4 +239,21 @@ async def on_ready():
 
 
 bot.add_cog(BonoboCog(bot))
+slash = SlashCommand(bot, sync_commands=True)
+
+
+@slash.slash(
+    name="bonobo",
+    description="Bonobos the people specified. Use 'rng' for random!",
+    guild_ids=[804072920519409674],
+)
+async def _bonobo(ctx: SlashContext, message):
+    ctx.command = bot.get_command("bonobo")
+    ctx.view = StringView(message)
+    ctx.cog = bot.get_cog("BonoboCog")
+    # discord slash commands currently do not support image attachments on first interaction
+    await ctx.send("Processing request...", hidden=True)
+    await bot.invoke(ctx)
+
+
 bot.run(TOKEN)
