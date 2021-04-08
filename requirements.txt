@@ -260,3 +260,5 @@ six == 1.15.0
 
 # Bonobot/venv/lib/python3.6/site-packages/discord/ext/typed_commands/__init__.py: 3
 typing-extensions == 3.7.4.3
+
+discord-py-slash-command == 1.1.0
