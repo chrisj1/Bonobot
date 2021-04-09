@@ -245,7 +245,6 @@ slash = SlashCommand(bot, sync_commands=True)
 @slash.slash(
     name="bonobo",
     description="Bonobos the people specified. Use 'rng' for random!",
-    guild_ids=[804072920519409674],
 )
 async def _bonobo(ctx: SlashContext, message):
     ctx.command = bot.get_command("bonobo")
