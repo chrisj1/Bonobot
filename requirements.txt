@@ -5,7 +5,7 @@
 # Bonobot/venv/lib/python3.6/site-packages/ImageFileIO.py: 1
 # Bonobot/venv/lib/python3.6/site-packages/ImageGL.py: 1
 # Bonobot/venv/lib/python3.6/site-packages/OleFileIO.py: 1
-Pillow == 8.1.1
+Pillow == 8.2.0
 
 # Bonobot/venv/lib/python3.6/site-packages/PIL/ImageQt.py: 36
 PySide2 == 5.15.0
