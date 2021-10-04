@@ -38,7 +38,7 @@ datrie == 0.8.2
 # Bonobot/venv/lib/python3.6/site-packages/discord/ext/commands/help.py: 32
 # Bonobot/venv/lib/python3.6/site-packages/discord/ext/tasks/__init__.py: 30,36
 # Bonobot/venv/lib/python3.6/site-packages/discord/ext/typed_commands/__init__.py: 5,7
-discord.py == 1.6.0
+nextcord == 2.0.0a3
 
 # Bonobot/venv/lib/python3.6/site-packages/numpy/core/generate_numpy_api.py: 4
 genapi == 0.0.8

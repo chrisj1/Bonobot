@@ -1,7 +1,7 @@
 # Work with Python 3.6'
 from __future__ import unicode_literals
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 from PIL import Image, ImageDraw, ImageOps
 from io import BytesIO
 import aiohttp
@@ -22,7 +22,7 @@ except:
     )
     sys.exit(1)
 
-intents = discord.Intents.default()
+intents = nextcord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -131,7 +131,7 @@ class LazyRandom:
         pass
 
 
-class DiscordMonke(discord.ext.commands.converter.Converter):
+class DiscordMonke(nextcord.ext.commands.converter.Converter):
     async def convert(self, ctx, argument: str):
         if argument.lower() in ["random", "rng"]:
             return LazyRandom()
@@ -166,15 +166,8 @@ class BonoboCog(commands.Cog):
         self.templates = parseManifest()
         self.session = aiohttp.ClientSession(loop=bot.loop)
 
-    async def get_avatar(
-        self, user: Union[discord.User, discord.Member, discord.emoji.Emoji]
-    ) -> Image:
-        if isinstance(user, discord.emoji.Emoji):
-            avatar_url = user.url_as(format="png")
-        else:
-            avatar_url = user.avatar_url_as(format="png", size=1024)
-        response = await self.session.get(str(avatar_url))
-        avatar_bytes = await response.read()
+    async def get_avatar(self, user: Union[nextcord.User, nextcord.Member]) -> Image:
+        avatar_bytes = await user.display_avatar.read()
         return Image.open(BytesIO(avatar_bytes))
 
     @commands.command(aliases=["bonobot"])
@@ -211,7 +204,7 @@ class BonoboCog(commands.Cog):
         buffer = BytesIO()
         im.save(buffer, "png")
         buffer.seek(0)
-        await ctx.send(file=discord.File(filename="love.png", fp=buffer))
+        await ctx.send(file=nextcord.File(filename="love.png", fp=buffer))
 
 
 @bot.event
