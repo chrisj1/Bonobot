@@ -1,7 +1,7 @@
 # Work with Python 3.6'
 from __future__ import unicode_literals
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 from PIL import Image, ImageDraw, ImageOps
 from io import BytesIO
 import aiohttp
@@ -22,7 +22,7 @@ except:
     )
     sys.exit(1)
 
-intents = discord.Intents.default()
+intents = nextcord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -126,15 +126,38 @@ def pasteImg(root, top, ul, lr):
     return im
 
 
-class DiscordMonke(discord.ext.commands.converter.Converter):
+class LazyRandom:
+    def __init__(self):
+        pass
+
+
+class DiscordMonke(nextcord.ext.commands.converter.Converter):
     async def convert(self, ctx, argument: str):
         if argument.lower() in ["random", "rng"]:
-            return random.choice(ctx.guild.members)
+            return LazyRandom()
 
         try:
             return await commands.converter.MemberConverter().convert(ctx, argument)
         except:
             return await commands.converter.EmojiConverter().convert(ctx, argument)
+
+
+def get_best_random(users, members):
+    currRandom = set()
+    for i in range(len(users)):
+        if isinstance(users[i], LazyRandom):
+            if len(currRandom) >= len(members):
+                # just do regular sampling
+                users[i] = random.choice(members)
+                continue
+
+            # find unique random member
+            candidate = random.choice(members)
+            while candidate in currRandom:
+                candidate = random.choice(members)
+
+            currRandom.add(candidate)
+            users[i] = candidate
 
 
 class BonoboCog(commands.Cog):
@@ -143,30 +166,24 @@ class BonoboCog(commands.Cog):
         self.templates = parseManifest()
         self.session = aiohttp.ClientSession(loop=bot.loop)
 
-    async def get_avatar(
-        self, user: Union[discord.User, discord.Member, discord.emoji.Emoji]
-    ) -> Image:
-        if isinstance(user, discord.emoji.Emoji):
-            avatar_url = user.url_as(format="png")
-        else:
-            avatar_url = user.avatar_url_as(format="png", size=1024)
-        response = await self.session.get(str(avatar_url))
-        avatar_bytes = await response.read()
+    async def get_avatar(self, user: Union[nextcord.User, nextcord.Member]) -> Image:
+        avatar_bytes = await user.display_avatar.read()
         return Image.open(BytesIO(avatar_bytes))
 
     @commands.command(aliases=["bonobot"])
     async def bonobo(self, ctx, users: commands.Greedy[DiscordMonke]):
         if len(users) == 0 and len(ctx.message.clean_content.split()) == 1:
-            users = [
-                random.choice(ctx.guild.members)
-                for _ in range(random.choice(tuple(self.templates)).faces)
-            ]
+            users = [LazyRandom()] * random.choice(tuple(self.templates)).faces
+            get_best_random(
+                users,
+                ctx.guild.members,
+            )
 
         available_templates = list(
             filter(lambda t: t.faces == len(users), self.templates)
         )
 
-        # Randomize the images for maximum fun
+        # Randomize the ordering for maximum fun
         random.shuffle(users)
 
         if len(available_templates) == 0:
@@ -174,6 +191,9 @@ class BonoboCog(commands.Cog):
             return
 
         template = random.choice(available_templates)
+        # Handle any randoms
+        get_best_random(users, ctx.guild.members)
+
         im = Image.open(template.filename).convert("RGBA")
         for count, user in enumerate(users):
             top = await self.get_avatar(user)
@@ -184,7 +204,7 @@ class BonoboCog(commands.Cog):
         buffer = BytesIO()
         im.save(buffer, "png")
         buffer.seek(0)
-        await ctx.send(file=discord.File(filename="love.png", fp=buffer))
+        await ctx.send(file=nextcord.File(filename="love.png", fp=buffer))
 
 
 @bot.event
