@@ -13,6 +13,9 @@ import imageio
 import os
 import os.path
 
+import numpy as np
+import cv2
+
 try:
     TOKEN = os.environ["BONOBOT_TOKEN"]
 except:
@@ -159,6 +162,21 @@ def get_best_random(users, members):
             currRandom.add(candidate)
             users[i] = candidate
 
+def fry(image):
+    # sets the green channel equal to the 
+    # increase saturation
+    hsvImg = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
+    hsvImg[...,1] = hsvImg[...,1]*5
+    image=cv2.cvtColor(hsvImg,cv2.COLOR_HSV2BGR)
+    
+    return image
+
+def sharp(image):
+    # sharpening kernel
+    kernel = np.array([[0, -1, 0],
+                       [-1, 5,-1],
+                       [0, -1, 0]])
+    return cv2.filter2D(src=image, ddepth=-1, kernel=kernel)
 
 class BonoboCog(commands.Cog):
     def __init__(self, bot):
@@ -170,8 +188,12 @@ class BonoboCog(commands.Cog):
         avatar_bytes = await user.display_avatar.read()
         return Image.open(BytesIO(avatar_bytes))
 
+    @commands.command(aliases=["nft"])
+    async def deepfry(self, ctx, users:commands.Greedy[DiscordMonke]):
+        await self.bonobo(ctx,users,True)
+
     @commands.command(aliases=["bonobot"])
-    async def bonobo(self, ctx, users: commands.Greedy[DiscordMonke]):
+    async def bonobo(self, ctx, users: commands.Greedy[DiscordMonke], deepfry=False):
         if len(users) == 0 and len(ctx.message.clean_content.split()) == 1:
             users = [LazyRandom()] * random.choice(tuple(self.templates)).faces
             get_best_random(
@@ -200,7 +222,10 @@ class BonoboCog(commands.Cog):
             im = pasteImg(
                 im, top, template.upperleftcord(count), template.lowerrightcord(count)
             )
-
+        if deepfry:
+            opencvImage = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR)
+            im = Image.fromarray(fry(sharp(sharp(opencvImage))))
+        # deepfry
         buffer = BytesIO()
         im.save(buffer, "png")
         buffer.seek(0)
