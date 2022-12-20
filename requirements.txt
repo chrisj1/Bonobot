@@ -11,3 +11,9 @@ imageio == 2.9.0
 
 # Bonobot/main.py: 3,4
 nextcord == 2.0.0a3
+
+# numpy
+numpy
+
+# opencv
+opencv-python
